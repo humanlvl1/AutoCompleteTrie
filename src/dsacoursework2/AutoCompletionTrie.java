@@ -158,7 +158,9 @@ public class AutoCompletionTrie {
     public void writeAutoCompleteList(String prefix, PrintWriter writer){
         AutoCompletionTrie subTrie = this.getSubTrie(prefix);
         TreeMap<Integer,LinkedList<String>> allWords = subTrie.getIntegerStringsMap();
-        int totalWordFrequency = subTrie.getTotalWordFrequency();
+
+        int totalWordFrequency = 0;
+        for (Map.Entry<Integer,LinkedList<String>> entry : allWords.entrySet()) totalWordFrequency += entry.getKey();
 
         TrieNode subTrieRoot = subTrie.getRoot();
         if(subTrieRoot.isWord()){
@@ -176,7 +178,13 @@ public class AutoCompletionTrie {
         int writeCount=0;
         while(allWords.size()>0){
             entry = allWords.pollLastEntry();
-            for (String s : entry.getValue()) {
+
+            LinkedList<String> entryValue = entry.getValue();
+            if (entryValue.size() > 1) {
+                Collections.sort(entryValue);
+            }
+
+            for (String s : entryValue) {
                 probability = (float)entry.getKey()/totalWordFrequency;
                 System.out.println(prefix+s + " (probability "+probability+")");
                 writer.append(prefix+s+","+probability+",");
