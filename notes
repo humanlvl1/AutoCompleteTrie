@@ -1,0 +1,15 @@
+Sun 16 Feb 2020 14:37:46 GMT 
+1. Complete the report for part 1 today. Hook up the big screen a the dining table and do it
+dueal screen.
+
+2. Notes for part 2;
+	- Trie holding string keys (LOOK AT TRIES AGAIN)
+	- Assume all characters of any word input are lower case
+ 	- a to z
+	- For report; give pseudo code algorithm and algorithmic 
+	description
+
+	- TrieNode array of 26 (one per letter. Index 0 is a, index 1 is b etc). TrieNode
+	contain this array.
+	- Trie class. TrieNode as root. 
+Create the Trie class, with all its method, and comment in notes about the algorithms.
