@@ -63,10 +63,9 @@ public class DictionaryMaker {
         return dictionaryTree;
      }
 
-     public static void saveToFile(String path, Map<String,Integer> map) throws FileNotFoundException {
+     public static void saveToFile(String path, Map<?,?> map) throws FileNotFoundException {
          PrintStream ps = new PrintStream(new FileOutputStream(path, true));
-        // ps.print(o);
-         for (Map.Entry<String,Integer> entry : map.entrySet()) {
+         for (Map.Entry<?,?> entry : map.entrySet()) {
             ps.print(entry.getKey());
             ps.print(",");
             ps.print(entry.getValue());
