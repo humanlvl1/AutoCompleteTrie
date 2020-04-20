@@ -90,9 +90,9 @@ public class Trie {
 
     public LinkedList<String> getAllWords(){ //linked list because add is O(1). Add is the only thing we need to do.
         //returns all words. Should be as efficient as possible.
-        LinkedList<String> dictionary = new LinkedList<>();
-        root.findWords(dictionary, "");
-        return dictionary;
+        LinkedList<String> wordList = new LinkedList<>();
+        root.findWords(wordList, "");
+        return wordList;
     }
 
     private static Trie createExampleTrie(){
@@ -106,13 +106,6 @@ public class Trie {
     }
 
     public static void main(String[] args) {
-/*        char a = 'b';
-        int num = a;
-        System.out.println(num);
-
-        String s = "abc";
-        System.out.println(s.charAt(0) - 'a');*/
-
         Trie trie = new Trie();
 
         System.out.println("Adding 'abcd' for the first time: "+trie.add("abcd"));

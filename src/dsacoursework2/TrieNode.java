@@ -41,10 +41,6 @@ public class TrieNode {
         children = new TrieNode[26];
     }
 
-/*    public void setChild(int index, TrieNode node){//todo check if you need it
-        children[index] = node;
-    }*/
-
     /**
      * Creates a new child node at specified index.
      * @param index : index in the 'children' array where the new node will be.
@@ -54,18 +50,6 @@ public class TrieNode {
         children[index] = new TrieNode();
     }
 
-  /*  public void findWords(LinkedList<String> strList, String str){
-        if(children!=null) {
-            for (int i = 0; i < children.length; i++) {
-                if (children[i] != null) {
-                    if (children[i].isWord) {
-                        strList.add(new StringBuilder().append(str).append((char)(i+'a')).toString());
-                    }
-                    children[i].findWords(strList, str.concat(String.valueOf((char) (i + 97))));
-                }
-            }
-        }
-    }*/
   public void findWords(LinkedList<String> strList, String str){
       if(children!=null) {
           for (int i = 0; i < children.length; i++) {
@@ -80,33 +64,34 @@ public class TrieNode {
       }
   }
 
-    public void findWordsWithCount(HashMap<String, Integer> hashMap, String s){
+    public void findWordsWithCount(HashMap<String, Integer> hashMap, String str){
         if(children!=null) {
             for (int i = 0; i < children.length; i++) {
                 if (children[i] != null) {
                     if (children[i].isWord) {
-                        hashMap.put(new StringBuilder().append(s).append((char)(i+'a')).toString(),
+                        hashMap.put(new StringBuilder().append(str).append((char)(i+'a')).toString(),
                                 children[i].getFrequency());
                     }
-                    children[i].findWordsWithCount(hashMap, s.concat(String.valueOf((char) (i + 97))));
+                    children[i].findWordsWithCount(hashMap, str.concat(String.valueOf((char) (i + 97))));
                 }
             }
         }
     }
 
-    public void populateIntegerStringsMap(TreeMap<Integer,LinkedList<String>> treeMap, String s){
+    public void populateFrequencyMap(TreeMap<Integer,LinkedList<String>> treeMap, String str){
         if(children!=null) {
             for (int i = 0; i < children.length; i++) {
                 if (children[i] != null) {
                     if (children[i].isWord) {
-                        LinkedList<String> list = treeMap.get(children[i].getFrequency());
+                        int childFrequency = children[i].getFrequency();
+                        LinkedList<String> list = treeMap.get(childFrequency);
                         if(list==null){
                             list = new LinkedList<>();
                         }
-                        list.add(new StringBuilder().append(s).append((char)(i+'a')).toString());
-                        treeMap.put(children[i].getFrequency(), list);
+                        list.add(new StringBuilder().append(str).append((char)(i+'a')).toString());
+                        treeMap.put(childFrequency, list);
                     }
-                    children[i].populateIntegerStringsMap(treeMap, s.concat(String.valueOf((char) (i + 97))));
+                    children[i].populateFrequencyMap(treeMap, str.concat(String.valueOf((char) (i + 97))));
                 }
             }
         }

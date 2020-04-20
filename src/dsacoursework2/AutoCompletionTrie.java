@@ -6,21 +6,9 @@ import java.util.*;
 
 public class AutoCompletionTrie {
     TrieNode root;
-    int totalWordFrequency;
-    int uniqueWordsCount;
 
     public AutoCompletionTrie(){
         this.root = new TrieNode();
-        this.totalWordFrequency = 0;
-        this.uniqueWordsCount = 0;
-    }
-
-    public int getTotalWordFrequency() {
-        return totalWordFrequency;
-    }
-
-    public int getUniqueWordsCount() {
-        return uniqueWordsCount;
     }
 
     public TrieNode getRoot() {
@@ -52,8 +40,6 @@ public class AutoCompletionTrie {
         if(!curr.isWord()){
             curr.setIsWord(true);
             curr.setFrequency(frequency);
-            totalWordFrequency += frequency;
-            uniqueWordsCount++;
         } else {
             return false;
         }
@@ -69,10 +55,7 @@ public class AutoCompletionTrie {
             }
             curr = curr.getChild(c);
         }
-        if (!curr.isWord()) {
-            return false;
-        }
-        return true;
+        return curr.isWord();
     }
 
     public String outputBreadthFirstSearch(){ //t
@@ -81,41 +64,18 @@ public class AutoCompletionTrie {
         queue.add(root);
         StringBuilder s = new StringBuilder();
         TrieNode trieNode;
-        //add prefix
         while(!queue.isEmpty()){
             trieNode = queue.poll();
             if(trieNode.getChildren()!=null){
                 for (int i = 0; i < trieNode.getChildren().length; i++) {
                     if (trieNode.getChildren()[i] != null) {
+                        s.append((char)(i+'a'));
                         queue.add(trieNode.getChildren()[i]);
                     }
                 }
             }
         }
         return s.toString();
-    }
-
-    private void updateWordsCounts(){
-        /*return a string representing breadth-first traversal*/
-        this.totalWordFrequency=0;
-        this.uniqueWordsCount=0;
-        Stack<TrieNode>  queue = new Stack<>();
-        queue.push(root);
-        TrieNode trieNode;
-        while(!queue.isEmpty()){
-            trieNode = queue.pop();
-            if(trieNode.getChildren()!=null){
-                for (int i = 0; i < trieNode.getChildren().length; i++) {
-                    if (trieNode.getChildren()[i] != null) {
-                        queue.add(trieNode.getChildren()[i]);
-                    }
-                }
-            }
-            if(trieNode.isWord()){
-                totalWordFrequency+=trieNode.getFrequency();
-                uniqueWordsCount++;
-            }
-        }
     }
 
     public String outputDepthFirstSearch(){
@@ -132,7 +92,6 @@ public class AutoCompletionTrie {
         }
         AutoCompletionTrie subTrie = new AutoCompletionTrie();
         subTrie.setRoot(curr);
-        subTrie.updateWordsCounts();
         return subTrie;
     }
 
@@ -149,27 +108,29 @@ public class AutoCompletionTrie {
         return hashMap;
     }
 
-    public TreeMap<Integer, LinkedList<String>> getIntegerStringsMap(){
+    public TreeMap<Integer, LinkedList<String>> getFrequencyMap(){
         TreeMap<Integer,LinkedList<String>> treeMap = new TreeMap<>();
-        root.populateIntegerStringsMap(treeMap, "");
+        root.populateFrequencyMap(treeMap, "");
         return treeMap;
     }
 
-    public void writeAutoCompleteList(String prefix, PrintWriter writer){
+    public void writeAutoComplete(String prefix, PrintWriter writer){
         AutoCompletionTrie subTrie = this.getSubTrie(prefix);
-        TreeMap<Integer,LinkedList<String>> allWords = subTrie.getIntegerStringsMap();
+        TreeMap<Integer,LinkedList<String>> allWords = subTrie.getFrequencyMap();
 
-        int totalWordFrequency = 0;
-        for (Map.Entry<Integer,LinkedList<String>> entry : allWords.entrySet()) totalWordFrequency += entry.getKey();
+        int totalWordFreq = 0;
+        for (Map.Entry<Integer,LinkedList<String>> pair : allWords.entrySet())
+            totalWordFreq += pair.getKey();
 
         TrieNode subTrieRoot = subTrie.getRoot();
+        LinkedList<String> entryValue;
         if(subTrieRoot.isWord()){
-            LinkedList<String> temp = allWords.get(subTrieRoot.getFrequency());
-            if(temp == null) {
-                temp = new LinkedList<>();
+            entryValue = allWords.get(subTrieRoot.getFrequency());
+            if(entryValue == null) {
+                entryValue = new LinkedList<>();
             }
-            temp.add("");
-            allWords.put(subTrieRoot.getFrequency(), temp);
+            entryValue.push("");
+            allWords.put(subTrieRoot.getFrequency(), entryValue);
         }
         writer.append(prefix+",");
 
@@ -179,15 +140,15 @@ public class AutoCompletionTrie {
         while(allWords.size()>0){
             entry = allWords.pollLastEntry();
 
-            LinkedList<String> entryValue = entry.getValue();
+            entryValue = entry.getValue();
             if (entryValue.size() > 1) {
                 Collections.sort(entryValue);
             }
 
-            for (String s : entryValue) {
-                probability = (float)entry.getKey()/totalWordFrequency;
-                System.out.println(prefix+s + " (probability "+probability+")");
-                writer.append(prefix+s+","+probability+",");
+            for (String str : entryValue) {
+                probability = (float)entry.getKey()/totalWordFreq;
+                System.out.println(prefix+str + " (probability "+probability+")");
+                writer.append(prefix+str+","+probability+",");
                 writeCount++;
                 if(writeCount==3) {
                     System.out.println();
@@ -200,29 +161,24 @@ public class AutoCompletionTrie {
         writer.append("\n");
     }
 
-    public void addFromTreeMap(TreeMap<String, Integer> treeMap) {
-        for (Map.Entry<String, Integer> entry : treeMap.entrySet()) {
-            this.add(entry.getKey(), entry.getValue());
-        }
-    }
-
     public static void main(String[] args) throws Exception{
         String pwd = System.getProperty("user.dir");
         ArrayList<String> in = DictionaryMaker.readWordsFromCSV(pwd + "/lotr.csv");
         TreeMap<String, Integer> dictionaryTree = DictionaryMaker.formDictionary(in);
 
         AutoCompletionTrie trie = new AutoCompletionTrie();
-        trie.addFromTreeMap(dictionaryTree);
+        for (Map.Entry<String, Integer> entry : dictionaryTree.entrySet()) {
+            trie.add(entry.getKey(), entry.getValue());
+        }
         in = DictionaryMaker.readLinesFromCSV(pwd + "/lotrQueries.csv");
 
         File csv = new File(pwd+"/lotrMatches.csv");
         PrintWriter writer = new PrintWriter(csv);
 
         for (String s : in) {
-           trie.writeAutoCompleteList(s, writer);
+           trie.writeAutoComplete(s, writer);
         }
 
-        trie.writeAutoCompleteList("hi", writer);
         writer.flush();
         writer.close();
     }

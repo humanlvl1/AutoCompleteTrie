@@ -2,10 +2,7 @@
 package dsacoursework2;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Scanner;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  1. read text document into a list of strings;
@@ -66,9 +63,15 @@ public class DictionaryMaker {
         return dictionaryTree;
      }
 
-     public static void saveToFile(String path, Object o) throws FileNotFoundException {
+     public static void saveToFile(String path, Map<String,Integer> map) throws FileNotFoundException {
          PrintStream ps = new PrintStream(new FileOutputStream(path, true));
-         ps.print(o);
+        // ps.print(o);
+         for (Map.Entry<String,Integer> entry : map.entrySet()) {
+            ps.print(entry.getKey());
+            ps.print(",");
+            ps.print(entry.getValue());
+            ps.print("\n");
+         }
      }
          
     public static void main(String[] args) throws Exception {
