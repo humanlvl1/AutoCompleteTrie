@@ -138,7 +138,7 @@ public class AutoCompletionTrie {
         float probability;
         int writeCount=0;
         while(allWords.size()>0){
-            entry = allWords.pollLastEntry();
+            entry = allWords.pollLastEntry(); //pop
 
             entryValue = entry.getValue();
             if (entryValue.size() > 1) {

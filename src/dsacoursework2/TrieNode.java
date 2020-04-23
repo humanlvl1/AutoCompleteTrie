@@ -21,6 +21,7 @@ public class TrieNode {
     public TrieNode[] getChildren() {
         return children;
     }
+
     public TrieNode getChild(char c){
         return children[c - 'a'];
     }
@@ -69,6 +70,7 @@ public class TrieNode {
             for (int i = 0; i < children.length; i++) {
                 if (children[i] != null) {
                     if (children[i].isWord) {
+                        //add string key (str+children's character) and integer value (children's frequency)
                         hashMap.put(new StringBuilder().append(str).append((char)(i+'a')).toString(),
                                 children[i].getFrequency());
                     }
@@ -85,9 +87,10 @@ public class TrieNode {
                     if (children[i].isWord) {
                         int childFrequency = children[i].getFrequency();
                         LinkedList<String> list = treeMap.get(childFrequency);
-                        if(list==null){
+                        if(list==null){ //if no other words with the frequency in the map yet, make new list
                             list = new LinkedList<>();
                         }
+                        //add a string (str + children's character) to the the list
                         list.add(new StringBuilder().append(str).append((char)(i+'a')).toString());
                         treeMap.put(childFrequency, list);
                     }
